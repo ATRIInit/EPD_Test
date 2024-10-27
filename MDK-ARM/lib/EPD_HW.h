@@ -25,13 +25,16 @@ struct EPD_InfDef
 	uint8_t ErrorFalg;
 } extern EPD_Inf;
 
-void EPD_HReset();
-uint8_t EPD_IsBusy();
-void EPD_Sleep();
+void EPD_HReset(void);
+uint8_t EPD_IsBusy(void);
+void EPD_Sleep(void);
 void EPD_SendByte(uint8_t data,DataType datatype);
 void EPD_Display_Clear(void);
-void EPD_Update();
+void EPD_Update_All(void);
+void EPD_Update_Part(void);
+void EPD_Update_Part(void);
+void EPD_XYSEPositionSet(uint16_t xs,uint16_t ys,uint16_t xe,uint16_t ye);
 void EPD_Init2(void);
-void EPD_Init();
+void EPD_Init(void);
 void EPD_XYCntSet(uint16_t x,uint16_t y);
 #endif

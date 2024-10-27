@@ -7,16 +7,16 @@ epd_test/stm32g4xx_hal_cortex.o: \
   ..\Drivers\CMSIS\Device\ST\STM32G4xx\Include\stm32g4xx.h \
   ..\Drivers\CMSIS\Device\ST\STM32G4xx\Include\stm32g431xx.h \
   ..\Drivers\CMSIS\Include\core_cm4.h \
-  C:\Program\ Files\Keil\ARM\ARMCLANG\include\stdint.h \
-  Z:\NAS\stm32\EPD_Test\Drivers\CMSIS\Include\cmsis_version.h \
-  Z:\NAS\stm32\EPD_Test\Drivers\CMSIS\Include\cmsis_compiler.h \
-  Z:\NAS\stm32\EPD_Test\Drivers\CMSIS\Include\cmsis_armclang.h \
-  C:\Program\ Files\Keil\ARM\ARMCLANG\include\arm_compat.h \
-  C:\Program\ Files\Keil\ARM\ARMCLANG\include\arm_acle.h \
-  Z:\NAS\stm32\EPD_Test\Drivers\CMSIS\Include\mpu_armv7.h \
+  C:\Program\ Files\Keil\ARM\ARMCLANG\Bin\..\include\stdint.h \
+  ..\Drivers\CMSIS\Include\cmsis_version.h \
+  ..\Drivers\CMSIS\Include\cmsis_compiler.h \
+  ..\Drivers\CMSIS\Include\cmsis_armclang.h \
+  C:\Program\ Files\Keil\ARM\ARMCLANG\Bin\..\include\arm_compat.h \
+  C:\Program\ Files\Keil\ARM\ARMCLANG\Bin\..\include\arm_acle.h \
+  ..\Drivers\CMSIS\Include\mpu_armv7.h \
   ..\Drivers\CMSIS\Device\ST\STM32G4xx\Include\system_stm32g4xx.h \
   ..\Drivers\STM32G4xx_HAL_Driver\Inc\Legacy\stm32_hal_legacy.h \
-  C:\Program\ Files\Keil\ARM\ARMCLANG\include\stddef.h \
+  C:\Program\ Files\Keil\ARM\ARMCLANG\Bin\..\include\stddef.h \
   ..\Drivers\STM32G4xx_HAL_Driver\Inc\stm32g4xx_hal_rcc_ex.h \
   ..\Drivers\STM32G4xx_HAL_Driver\Inc\stm32g4xx_hal_gpio.h \
   ..\Drivers\STM32G4xx_HAL_Driver\Inc\stm32g4xx_hal_gpio_ex.h \

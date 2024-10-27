@@ -103,6 +103,7 @@ int main(void)
 	HAL_GPIO_WritePin(GPIOC,GPIO_PIN_13,1);
 	Delay_ms(50);
 	
+	
 	EPD_Inf.WEIGHT_MAX = 296;
 	EPD_Inf.HEIGHT_MAX = 152;
 	
@@ -115,19 +116,16 @@ int main(void)
 	EPD_Init();
 	UI_Init();
 	EPD_Display_Clear();
-	//EPD_Update();
 	
-	
+	UI_DrawBox_EMPTY(0,25,100,50,BLACK,WHITE,2);
+	UI_DrawBox_EMPTY(110,0,210,50,BLACK,RED,2);
+	UI_DrawBox_EMPTY(110,100,210,150,RED,WHITE,2);
 
-  /* USER CODE END 2 */
-
-  /* Infinite loop */
-  /* USER CODE BEGIN WHILE */
-	UIDrawBox_EMPTY(0,0,100,50,BLACK,WHITE,2);
-	UIDrawBox_EMPTY(110,0,210,50,BLACK,RED,2);
+	UI_Update_All();	
 	
-	UIUpdateGRAM();
+	UI_DrawBox_FILLED(0,0,60,60,BLACK);
 	
+	//UI_Update_Part(0,0,60,60);//unusable for 3colors EPD
 	
   while (1)
   {

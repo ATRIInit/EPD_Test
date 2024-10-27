@@ -9,7 +9,7 @@ typedef enum COLOR
 	RED=2,
 	EMP=3
 }UI_COLOR_TYPE;
-void UIDrawPixel(uint16_t x,uint16_t y,UI_COLOR_TYPE color)
+void UI_DrawPixel(uint16_t x,uint16_t y,UI_COLOR_TYPE color)
 {
 	switch(color)
 	{
@@ -27,14 +27,14 @@ void UIDrawPixel(uint16_t x,uint16_t y,UI_COLOR_TYPE color)
 		break;
 		case EMP:
 		break;
-		defaullt:
+		
 		//What are you fucking doing?
-		break;
+		
 	}
 	return ;
 }
 
-void UIUpdateGRAM()
+void UI_UpdateGRAM()
 {
 	EPD_SendByte(0x24,COMMAND);
 	for(int c1=EPD_Inf.WEIGHT_MAX-1;c1>=0;c1--)
@@ -52,8 +52,28 @@ void UIUpdateGRAM()
 			EPD_SendByte(GraphicRAM_R[c1*EPD_Inf.HEIGHT_MAX/8+c2],DATA);
 		}
 	}
-	EPD_Update();
+	
 	return ;
+}
+
+void UI_Update_All()
+{
+	UI_UpdateGRAM();
+	
+	EPD_XYSEPositionSet(0,(EPD_Inf.WEIGHT_MAX-1),0,(EPD_Inf.HEIGHT_MAX/8-1));
+	EPD_XYCntSet(0,0);
+	
+	EPD_Update_All();
+}
+void UI_Update_Part(uint16_t xs,uint16_t ys,uint16_t xe,uint16_t ye)
+{
+	UI_UpdateGRAM();
+	
+	EPD_XYSEPositionSet(xs,ys,xe,ye);
+	EPD_XYCntSet(xs,ys);
+	
+	EPD_Update_Part();
+	
 }
 void UI_Init()
 {
@@ -68,24 +88,24 @@ void UI_Init()
 
 
 //===
-void UIDrawBox_FILLED(uint16_t sx,uint16_t sy,uint16_t ex,uint16_t ey,UI_COLOR_TYPE color)
+void UI_DrawBox_FILLED(uint16_t sx,uint16_t sy,uint16_t ex,uint16_t ey,UI_COLOR_TYPE color)
 {
 	for(uint16_t cnt=sx;cnt<=ex;cnt++)
 	{
 		for(uint16_t cnt2=sy;cnt2<=ey;cnt2++)
 	{
-		UIDrawPixel(cnt,cnt2,color);
+		UI_DrawPixel(cnt,cnt2,color);
 	}
 	}
 	return ;
 }
-void UIDrawBox_EMPTY(uint16_t sx,uint16_t sy,uint16_t ex,uint16_t ey,UI_COLOR_TYPE coloro,UI_COLOR_TYPE colorin,uint16_t edgewide)
+void UI_DrawBox_EMPTY(uint16_t sx,uint16_t sy,uint16_t ex,uint16_t ey,UI_COLOR_TYPE coloro,UI_COLOR_TYPE colorin,uint16_t edgewide)
 {
-	UIDrawBox_FILLED(sx,sy,ex,sy+edgewide,coloro);
-	UIDrawBox_FILLED(sx,sy,sx+edgewide,ey,coloro);
-	UIDrawBox_FILLED(ex-edgewide,sy,ex,ey,coloro);
-	UIDrawBox_FILLED(sx,ey-edgewide,ex,ey,coloro);
-	UIDrawBox_FILLED(sx+edgewide,sy+edgewide,ex-edgewide,ey-edgewide,colorin);
+	UI_DrawBox_FILLED(sx,sy,ex,sy+edgewide,coloro);
+	UI_DrawBox_FILLED(sx,sy,sx+edgewide,ey,coloro);
+	UI_DrawBox_FILLED(ex-edgewide,sy,ex,ey,coloro);
+	UI_DrawBox_FILLED(sx,ey-edgewide,ex,ey,coloro);
+	UI_DrawBox_FILLED(sx+edgewide,sy+edgewide,ex-edgewide,ey-edgewide,colorin);
 	return ;
 }
 

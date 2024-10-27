@@ -12,7 +12,6 @@
 #define EPD_WEIGHT_MAX 296
 
 
-
 typedef enum
 {
     COMMAND=0,DATA=1
@@ -35,15 +34,16 @@ struct EPD_InfDef
 
 void EPD_HReset()
 {
-	HAL_GPIO_WritePin(PIN_RES,0);
+	HAL_GPIO_WritePin(PIN_RES,(GPIO_PinState)0);
 	Delay_ms(10);
-	HAL_GPIO_WritePin(PIN_RES,1);
+	HAL_GPIO_WritePin(PIN_RES,(GPIO_PinState)1);
 	Delay_ms(10);
 	return ;
 }
 void EPD_FreeCS()
 {
-	HAL_GPIO_WritePin(PIN_CS,1);
+	HAL_GPIO_WritePin(PIN_CS,(GPIO_PinState)1);
+	EPD_Inf.IsSelect = 0;
 	return ;
 }
 uint8_t EPD_IsBusy()
@@ -89,20 +89,42 @@ void EPD_Sleep()
 //===============================================================DRAW
 void EPD_XYCntSet(uint16_t x,uint16_t y)
 {
-	EPD_SendByte(0x4E,COMMAND);//X
-	EPD_SendByte(x,DATA);
-	EPD_SendByte(0x4F,COMMAND);//Y
-	EPD_SendByte(y&0xFF,DATA);
-	EPD_SendByte(y>>8,DATA);
+	EPD_SendByte(0x4E,COMMAND);//Y
+	EPD_SendByte(y,DATA);
+	EPD_SendByte(0x4F,COMMAND);//X
+	EPD_SendByte(x&0xFF,DATA);
+	EPD_SendByte(x>>8,DATA);
+}
+void EPD_XYSEPositionSet(uint16_t xs,uint16_t ys,uint16_t xe,uint16_t ye)
+{
+	EPD_SendByte(0x44,COMMAND);
+	EPD_SendByte(ys,DATA);
+	EPD_SendByte(ye/8,DATA);
+
+	
+	EPD_SendByte(0x45,COMMAND);
+	EPD_SendByte(xs&(0xFF),DATA);
+	EPD_SendByte(xs>>8,DATA);
+	EPD_SendByte(xe&(0xFF),DATA);
+	EPD_SendByte(xe>>8,DATA);
 }
 
-
-void EPD_Update()
+void EPD_Update_All()
 {
 	
 	EPD_SendByte(0x22,COMMAND);
 	EPD_SendByte(0xF4,DATA);
 	EPD_SendByte(0x20,COMMAND);
+	return;
+}
+void EPD_Update_Part()
+{
+	
+	
+	EPD_SendByte(0x22,COMMAND);
+	EPD_SendByte(0xFF,DATA);
+	EPD_SendByte(0x20,COMMAND);
+	
 	return;
 }
 
@@ -116,6 +138,9 @@ void EPD_Init()
 	EPD_SendByte(0x12,COMMAND);
 	Delay_ms(10);
 	//NoSleep
+	
+	EPD_Inf.IsSleep = 0;
+	
 	EPD_SendByte(0x10,COMMAND);
 	EPD_SendByte(0x00,DATA);
 	//BorderWavefrom
@@ -165,6 +190,67 @@ void EPD_Init()
 
 	return ;
 }
+void EPD_Init2()
+{
+
+
+	EPD_HReset();
+	//SoftReset
+	EPD_SendByte(0x12,COMMAND);
+	Delay_ms(10);
+	//NoSleep
+	
+	EPD_Inf.IsSleep = 0;
+	
+	EPD_SendByte(0x10,COMMAND);
+	EPD_SendByte(0x00,DATA);
+	//BorderWavefrom
+	EPD_SendByte(0x3C,COMMAND);
+	EPD_SendByte(0x05,DATA);
+
+	//Gate Driver Output
+	EPD_SendByte(0x01,COMMAND);
+	EPD_SendByte((EPD_Inf.WEIGHT_MAX-1)&(0xFF),DATA);
+	EPD_SendByte((EPD_Inf.WEIGHT_MAX-1)>>8,DATA);
+	EPD_SendByte(0x0,DATA);
+	//XY Dir
+	
+	EPD_SendByte(0x11,COMMAND);
+	EPD_SendByte(0x03,DATA);
+	EPD_SendByte(0x44,COMMAND);
+	EPD_SendByte(0x00,DATA);
+	EPD_SendByte((EPD_Inf.HEIGHT_MAX/8-1),DATA);
+	EPD_SendByte(0x45,COMMAND);
+	EPD_SendByte(0,DATA);
+	EPD_SendByte(0,DATA);
+	EPD_SendByte((EPD_Inf.WEIGHT_MAX-1)&(0xFF),DATA);
+	EPD_SendByte((EPD_Inf.WEIGHT_MAX-1)>>8,DATA);
+	//XY cnt reset
+	EPD_SendByte(0x4E,COMMAND);//X
+	EPD_SendByte(0x00,DATA);
+	EPD_SendByte(0x4F,COMMAND);//Y
+	EPD_SendByte(0x00,DATA);
+	EPD_SendByte(0x00,DATA);
+	//temperature sense
+
+	EPD_SendByte(0x18,COMMAND);
+	EPD_SendByte(0x80,DATA);
+	//update ser
+	EPD_SendByte(0x21,COMMAND);
+	EPD_SendByte(0x00|(1<<6),DATA);//passby red
+	EPD_SendByte(0x80,DATA);
+	// Operating sequence set
+	
+	EPD_SendByte(0x22,COMMAND);
+	EPD_SendByte(0x91,DATA);
+	
+
+	//EPD_SendByte(0x20,COMMAND);
+
+	//
+
+	return ;
+}
 void EPD_WR_REG(uint8_t data)
 {
 	EPD_SendByte(data,COMMAND);
@@ -173,43 +259,7 @@ void EPD_WR_DATA8(uint8_t data)
 {
 	EPD_SendByte(data,DATA);
 }
-void EPD_Init2(void)
-{
 
-
-	EPD_WR_REG(0x12);  //SWRESET
-
-	
-	EPD_WR_REG(0x3C); //BorderWavefrom
-	EPD_WR_DATA8(0x05);
-	
-	EPD_WR_REG(0x01); //Driver output control      
-	EPD_WR_DATA8((EPD_Inf.WEIGHT_MAX-1)%256);    
-	EPD_WR_DATA8((EPD_Inf.WEIGHT_MAX-1)/256);
-	EPD_WR_DATA8(0x00); 
-
-	EPD_WR_REG(0x11); //data entry mode       
-	EPD_WR_DATA8(0x01);
-	EPD_WR_REG(0x44); //set Ram-X address start/end position   
-	EPD_WR_DATA8(0x00);    
-	EPD_WR_DATA8(EPD_Inf.HEIGHT_MAX/8-1);  
-	EPD_WR_REG(0x45); //set Ram-Y address start/end position          
-	EPD_WR_DATA8((EPD_Inf.WEIGHT_MAX-1)%256);
-	EPD_WR_DATA8((EPD_Inf.WEIGHT_MAX-1)%256); 
-  EPD_WR_DATA8(0x00); 
-	EPD_WR_DATA8(0x00);
-	EPD_WR_REG(0x21); //  Display update control
-	EPD_WR_DATA8(0x00);		
-  EPD_WR_DATA8(0x80);	
-  EPD_WR_REG(0x18); //Read built-in temperature sensor
-	EPD_WR_DATA8(0x80);	
-	EPD_WR_REG(0x4E);   // set RAM x address count to 0;
-	EPD_WR_DATA8(EPD_Inf.HEIGHT_MAX/8-1);    
-	EPD_WR_REG(0x4F);   // set RAM y address count to 0X199;    
-	EPD_WR_DATA8(0x00);
-	EPD_WR_DATA8(0x00);
-
-}
 void EPD_Display_Clear(void)
 {
   uint16_t i;
