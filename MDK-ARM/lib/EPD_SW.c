@@ -1,5 +1,6 @@
 #include "stm32g4xx.h"
 #include "EPD_HW.h"
+//graphic buffer
 uint8_t GraphicRAM_BW[EPD_WEIGHT_MAX*EPD_HEIGHT_MAX/8]={};
 uint8_t GraphicRAM_R[EPD_WEIGHT_MAX*EPD_HEIGHT_MAX/8]={};
 typedef enum COLOR
@@ -9,6 +10,7 @@ typedef enum COLOR
 	RED=2,
 	EMP=3
 }UI_COLOR_TYPE;
+//write a pixel of buffer
 void UI_DrawPixel(uint16_t x,uint16_t y,UI_COLOR_TYPE color)
 {
 	switch(color)
@@ -33,7 +35,7 @@ void UI_DrawPixel(uint16_t x,uint16_t y,UI_COLOR_TYPE color)
 	}
 	return ;
 }
-
+//write graphic data to EPD
 void UI_UpdateGRAM()
 {
 	EPD_SendByte(0x24,COMMAND);
@@ -55,7 +57,7 @@ void UI_UpdateGRAM()
 	
 	return ;
 }
-
+//update the whole screen
 void UI_Update_All()
 {
 	UI_UpdateGRAM();
@@ -65,6 +67,7 @@ void UI_Update_All()
 	
 	EPD_Update_All();
 }
+//update a part of the screen
 void UI_Update_Part(uint16_t xs,uint16_t ys,uint16_t xe,uint16_t ye)
 {
 	UI_UpdateGRAM();
@@ -75,6 +78,7 @@ void UI_Update_Part(uint16_t xs,uint16_t ys,uint16_t xe,uint16_t ye)
 	EPD_Update_Part();
 	
 }
+//only clear the buffer
 void UI_Init()
 {
 	for(uint32_t c1=0;c1<EPD_Inf.WEIGHT_MAX*EPD_Inf.HEIGHT_MAX/8;c1++)
@@ -87,7 +91,8 @@ void UI_Init()
 
 
 
-//===
+//======
+//I believe you can understand my code here....It is very simple.
 void UI_DrawBox_FILLED(uint16_t sx,uint16_t sy,uint16_t ex,uint16_t ey,UI_COLOR_TYPE color)
 {
 	for(uint16_t cnt=sx;cnt<=ex;cnt++)
@@ -99,13 +104,13 @@ void UI_DrawBox_FILLED(uint16_t sx,uint16_t sy,uint16_t ex,uint16_t ey,UI_COLOR_
 	}
 	return ;
 }
-void UI_DrawBox_EMPTY(uint16_t sx,uint16_t sy,uint16_t ex,uint16_t ey,UI_COLOR_TYPE coloro,UI_COLOR_TYPE colorin,uint16_t edgewide)
+void UI_DrawBox_EMPTY(uint16_t sx,uint16_t sy,uint16_t ex,uint16_t ey,UI_COLOR_TYPE coloroutside,UI_COLOR_TYPE colorinside,uint16_t edgewide)
 {
-	UI_DrawBox_FILLED(sx,sy,ex,sy+edgewide,coloro);
-	UI_DrawBox_FILLED(sx,sy,sx+edgewide,ey,coloro);
-	UI_DrawBox_FILLED(ex-edgewide,sy,ex,ey,coloro);
-	UI_DrawBox_FILLED(sx,ey-edgewide,ex,ey,coloro);
-	UI_DrawBox_FILLED(sx+edgewide,sy+edgewide,ex-edgewide,ey-edgewide,colorin);
+	UI_DrawBox_FILLED(sx,sy,ex,sy+edgewide,coloroutside);
+	UI_DrawBox_FILLED(sx,sy,sx+edgewide,ey,coloroutside);
+	UI_DrawBox_FILLED(ex-edgewide,sy,ex,ey,coloroutside);
+	UI_DrawBox_FILLED(sx,ey-edgewide,ex,ey,coloroutside);
+	UI_DrawBox_FILLED(sx+edgewide,sy+edgewide,ex-edgewide,ey-edgewide,colorinside);
 	return ;
 }
 

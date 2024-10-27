@@ -31,7 +31,7 @@ struct EPD_InfDef
 } EPD_Inf;
 
 
-
+//reset the epd on hardware
 void EPD_HReset()
 {
 	HAL_GPIO_WritePin(PIN_RES,(GPIO_PinState)0);
@@ -40,16 +40,19 @@ void EPD_HReset()
 	Delay_ms(10);
 	return ;
 }
+//free the epd from bus 
 void EPD_FreeCS()
 {
 	HAL_GPIO_WritePin(PIN_CS,(GPIO_PinState)1);
 	EPD_Inf.IsSelect = 0;
 	return ;
 }
+//detect if epd is in busy if so you shouldn't do any command
 uint8_t EPD_IsBusy()
 {
 	return HAL_GPIO_ReadPin(PIN_BUSY);
 }
+//send a byte to epd,command or data
 void EPD_SendByte(uint8_t data,DataType datatype)
 {
 	uint32_t TimCnt=0;
@@ -79,6 +82,7 @@ void EPD_SendByte(uint8_t data,DataType datatype)
 	HAL_SPI_Transmit(&hspi1,(uint8_t*)&data,sizeof(data),200);
 	return ;
 }
+//make the EPD in sleep and save power.if you want to wake it up,you should reinit it.
 void EPD_Sleep()
 {
 	EPD_SendByte(0x10,COMMAND);
@@ -87,6 +91,7 @@ void EPD_Sleep()
 	return ;
 }
 //===============================================================DRAW
+//set the cursor in the epd,it decides which pixel would be write next time.
 void EPD_XYCntSet(uint16_t x,uint16_t y)
 {
 	EPD_SendByte(0x4E,COMMAND);//Y
@@ -95,6 +100,7 @@ void EPD_XYCntSet(uint16_t x,uint16_t y)
 	EPD_SendByte(x&0xFF,DATA);
 	EPD_SendByte(x>>8,DATA);
 }
+//set the area that the cursor could move in
 void EPD_XYSEPositionSet(uint16_t xs,uint16_t ys,uint16_t xe,uint16_t ye)
 {
 	EPD_SendByte(0x44,COMMAND);
@@ -108,7 +114,7 @@ void EPD_XYSEPositionSet(uint16_t xs,uint16_t ys,uint16_t xe,uint16_t ye)
 	EPD_SendByte(xe&(0xFF),DATA);
 	EPD_SendByte(xe>>8,DATA);
 }
-
+//refer to _SW
 void EPD_Update_All()
 {
 	
@@ -128,7 +134,7 @@ void EPD_Update_Part()
 	return;
 }
 
-
+//=====================
 void EPD_Init()
 {
 
@@ -190,6 +196,7 @@ void EPD_Init()
 
 	return ;
 }
+//this funiction is for test.
 void EPD_Init2()
 {
 
@@ -251,6 +258,7 @@ void EPD_Init2()
 
 	return ;
 }
+
 void EPD_WR_REG(uint8_t data)
 {
 	EPD_SendByte(data,COMMAND);
@@ -259,7 +267,7 @@ void EPD_WR_DATA8(uint8_t data)
 {
 	EPD_SendByte(data,DATA);
 }
-
+//==================
 void EPD_Display_Clear(void)
 {
   uint16_t i;
